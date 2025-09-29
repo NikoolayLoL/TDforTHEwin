@@ -1,5 +1,6 @@
 {
   "*.js": [
-    "vitest related --run"
+    "npx vitest related --run"
   ]
 }
+
