@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tower Defense</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div id="ui-container">
+        <div id="stats">
+            <span>Lives: <span id="lives">10</span></span>
+            <span>Gold: <span id="gold">100</span></span>
+        </div>
+    </div>
+    <div id="top-right-controls">
+        <button id="speed-control-button">x1</button>
+        <button id="restart-button-top">🔄</button>
+        <button id="pause-button-emoji">⏸️</button>
+    </div>
+    <div id="wave-info">
+        <span>Wave: <span id="wave-number">1</span></span>
+    </div>
+    <canvas id="gameCanvas"></canvas>
+    <div id="upgrade-panel">
+        <button id="upgrade-range">Upgrade Range (Cost: <span id="upgrade-range-cost">10</span>)</button>
+        <button id="upgrade-speed">Upgrade Attack Speed (Cost: <span id="upgrade-speed-cost">10</span>)</button>
+        <button id="upgrade-damage">Upgrade Damage (Cost: <span id="upgrade-damage-cost">10</span>)</button>
+    </div>
+    <div id="game-over" style="display: none;">
+        <h1>Game Over</h1>
+        <button id="restart-button">Restart</button>
+    </div>
+    <div id="pause-overlay" style="display: none;">
+        <div id="pause-icon">❚❚</div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>
