@@ -35,4 +35,47 @@ function displayActiveItems() {
     }
 }
 
+// Handle seed input and game start
+function setupGameStart() {
+    const startGameLink = document.getElementById('start-game-link');
+    const startBlitzLink = document.getElementById('start-blitz-link');
+    const seedInput = document.getElementById('seed-input');
+    
+    // Classic Mode
+    startGameLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        let gameUrl = '/game.html';
+        const seedValue = seedInput.value.trim();
+        
+        if (seedValue && !isNaN(seedValue)) {
+            gameUrl += `?seed=${encodeURIComponent(seedValue)}`;
+        }
+        
+        window.location.href = gameUrl;
+    });
+    
+    // Blitz Mode
+    startBlitzLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        let gameUrl = '/blitz.html';
+        const seedValue = seedInput.value.trim();
+        
+        if (seedValue && !isNaN(seedValue)) {
+            gameUrl += `?seed=${encodeURIComponent(seedValue)}`;
+        }
+        
+        window.location.href = gameUrl;
+    });
+    
+    // Allow Enter key to start classic game
+    seedInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            startGameLink.click();
+        }
+    });
+}
+
 displayActiveItems();
+setupGameStart();

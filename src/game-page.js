@@ -10,8 +10,16 @@ const ctx = canvas.getContext('2d');
 canvas.width = 1600;
 canvas.height = 900;
 
-let game = new Game(canvas.width, canvas.height);
+// Get seed from URL parameters
+const urlParams = new URLSearchParams(window.location.search);
+const seed = urlParams.get('seed');
+const gameSeed = seed ? parseInt(seed) : null;
+
+let game = new Game(canvas.width, canvas.height, gameSeed);
 const inventory = new Inventory();
+
+// Display the seed in the UI
+document.getElementById('game-seed').textContent = game.seed;
 
 let isPaused = false;
 let lastTime = 0;
@@ -72,17 +80,6 @@ function updateActiveInventoryUI() {
 game.ui.draw();
 updateActiveInventoryUI();
 
-// Event Listeners
-document.getElementById('upgrade-range').addEventListener('click', () => {
-    game.gold = game.tower.upgradeRange(game.gold);
-});
-document.getElementById('upgrade-speed').addEventListener('click', () => {
-    game.gold = game.tower.upgradeSpeed(game.gold);
-});
-document.getElementById('upgrade-damage').addEventListener('click', () => {
-    game.gold = game.tower.upgradeDamage(game.gold);
-});
-
 const speedButton = document.getElementById('speed-control-button');
 const speedLevels = [1, 1.5, 2];
 let currentSpeedIndex = 0;
@@ -96,7 +93,9 @@ speedButton.addEventListener('click', (e) => {
 });
 
 document.getElementById('restart-button').addEventListener('click', (e) => {
-    game.restart();
+    // Create new game instance with same seed to keep background consistent
+    game = new Game(canvas.width, canvas.height, gameSeed);
+    document.getElementById('game-seed').textContent = game.seed;
     isPaused = false;
     // The overlay is now hidden by game.restart() -> gameOverScreen.hide()
     speedButton.textContent = 'x1';
@@ -107,10 +106,46 @@ document.getElementById('restart-button').addEventListener('click', (e) => {
 });
 
 document.getElementById('restart-button-top').addEventListener('click', (e) => {
-    game.restart();
+    // Create new game instance with same seed to keep background consistent
+    game = new Game(canvas.width, canvas.height, gameSeed);
+    document.getElementById('game-seed').textContent = game.seed;
     isPaused = false;
     speedButton.textContent = 'x1';
     currentSpeedIndex = 0;
+    e.currentTarget.blur();
+});
+
+// Tower upgrades
+document.getElementById('upgrade-range').addEventListener('click', (e) => {
+    const upgradeCost = game.tower.rangeCost;
+    if (game.gold >= upgradeCost) {
+        game.gold = game.tower.upgradeRange(game.gold);
+        if (game.buffSystem && game.inventory) {
+            game.buffSystem = new (game.buffSystem.constructor)(game.inventory.activeItems);
+        }
+    }
+    e.currentTarget.blur();
+});
+
+document.getElementById('upgrade-speed').addEventListener('click', (e) => {
+    const upgradeCost = game.tower.speedCost;
+    if (game.gold >= upgradeCost) {
+        game.gold = game.tower.upgradeSpeed(game.gold);
+        if (game.buffSystem && game.inventory) {
+            game.buffSystem = new (game.buffSystem.constructor)(game.inventory.activeItems);
+        }
+    }
+    e.currentTarget.blur();
+});
+
+document.getElementById('upgrade-damage').addEventListener('click', (e) => {
+    const upgradeCost = game.tower.damageCost;
+    if (game.gold >= upgradeCost) {
+        game.gold = game.tower.upgradeDamage(game.gold);
+        if (game.buffSystem && game.inventory) {
+            game.buffSystem = new (game.buffSystem.constructor)(game.inventory.activeItems);
+        }
+    }
     e.currentTarget.blur();
 });
 

@@ -5,16 +5,28 @@ import GameOver from './GameOver.js';
 import BuffSystem from '../effects/BuffSystem.js';
 import Inventory from '../inventory/Inventory.js';
 import LootSystem from '../loot/LootSystem.js';
+import NotificationManager from '../ui/NotificationManager.js';
+import BackgroundGenerator from '../background/BackgroundGenerator.js';
+import EnemySpawnManager from '../enemies/EnemySpawnManager.js';
 import * as config from '../config.js';
 
 export default class Game {
-    constructor(width, height) {
+    constructor(width, height, seed = null) {
         this.width = width;
         this.height = height;
         this.speedMultiplier = 1;
+        this.seed = seed || Math.floor(Math.random() * 1000000);
         
         this.inventory = new Inventory();
         this.buffSystem = new BuffSystem(this.inventory.activeItems);
+        this.notificationManager = new NotificationManager();
+        
+        // Initialize background
+        this.backgroundGenerator = new BackgroundGenerator(this.seed);
+        this.backgroundCanvas = this.backgroundGenerator.generateBackground(width, height);
+        
+        // Initialize spawn manager
+        this.spawnManager = new EnemySpawnManager(width, height, this.seed);
         
         this.tower = new Tower(this.width / 2, this.height / 2);
         this.waveManager = new WaveManager(this);
@@ -52,6 +64,9 @@ export default class Game {
 
         this.checkCollisions();
 
+        // Update notifications
+        this.notificationManager.update(dt);
+
         if (this.lives <= 0) {
             this.isGameOver = true;
             this.gameOverScreen.show();
@@ -59,6 +74,9 @@ export default class Game {
     }
 
     draw(ctx) {
+        // Draw background first
+        this.backgroundGenerator.draw(ctx);
+        
         this.tower.draw(ctx);
         this.waveManager.draw(ctx);
         this.projectiles.forEach(p => p.draw(ctx));
@@ -66,25 +84,29 @@ export default class Game {
     }
 
     checkCollisions() {
+        // Handle enemies that have reached the target
+        this.waveManager.enemies = this.waveManager.enemies.filter((enemy, eIndex) => {
+            if (enemy.hasReachedTarget) {
+                this.lives--;
+                console.log(`Enemy reached target! Lives remaining: ${this.lives}`);
+                return false; // Remove the enemy
+            }
+            return true; // Keep the enemy
+        });
+
         this.waveManager.enemies.forEach((enemy, eIndex) => {
             this.projectiles.forEach((projectile, pIndex) => {
                 const dist = Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y);
                 if (dist - enemy.radius - projectile.radius < 1) {
                     enemy.takeDamage(projectile.damage); // Use projectile's damage
                     this.projectiles.splice(pIndex, 1);
-                    if (enemy.health <= 0 && !enemy.hasDroppedLoot) {
+                    if (enemy.hp <= 0 && !enemy.hasDroppedLoot) {
                         this.gold += enemy.goldValue;
                         this.handleEnemyDeath(enemy);
                         this.waveManager.enemies.splice(eIndex, 1);
                     }
                 }
             });
-
-            const towerDist = Math.hypot(this.tower.x - enemy.x, this.tower.y - enemy.y);
-            if (towerDist - enemy.radius - this.tower.radius < 1) {
-                this.lives--;
-                this.waveManager.enemies.splice(eIndex, 1);
-            }
         });
     }
 
@@ -106,7 +128,8 @@ export default class Game {
                 // Update buff system with new inventory
                 this.buffSystem = new BuffSystem(this.inventory.activeItems);
                 
-                // Show notification (you could add a visual effect here later)
+                // Show visual notification at enemy death location
+                this.notificationManager.showItemDrop(newItem, enemy.x, enemy.y);
                 console.log(`New item found: ${newItem.name} - ${newItem.description}`);
             } else {
                 console.log('Inventory full! Item lost.');

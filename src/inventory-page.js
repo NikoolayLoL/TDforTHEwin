@@ -1,4 +1,5 @@
 import Inventory from './inventory/Inventory.js';
+import { effects } from './effects/effectDefinitions.js';
 import './../style.css';
 
 const inventory = new Inventory();
@@ -16,6 +17,13 @@ function createItemElement(item, index, type) {
     itemEl.dataset.type = type;
 
     if (item) {
+        // Add rarity-based styling
+        itemEl.classList.add('inventory-item');
+        const effect = effects[item.effectId];
+        if (effect && effect.rarity) {
+            itemEl.classList.add(`rarity-${effect.rarity}`);
+        }
+        
         itemEl.textContent = item.name.substring(0, 3);
         const tooltip = document.createElement('span');
         tooltip.classList.add('tooltip');

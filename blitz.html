@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tower Defense - Blitz Mode</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div id="ui-container">
+        <div id="stats">
+            <span>Lives: <span id="lives">10</span></span>
+            <span>Gold: <span id="gold">100</span></span>
+            <span>Seed: <span id="game-seed">Random</span></span>
+        </div>
+    </div>
+    <div id="top-right-controls">
+        <button id="speed-control-button">x1</button>
+        <button id="restart-button-top">🔄</button>
+        <button id="pause-button-emoji">⏸️</button>
+        <a href="/"><button id="main-menu-button-top">🏠</button></a>
+    </div>
+    <div id="wave-info">
+        <span>Wave: <span id="wave-number">1</span></span>
+        <span class="blitz-indicator">BLITZ MODE</span>
+    </div>
+    <canvas id="gameCanvas"></canvas>
+    
+    <!-- Blitz Mode Temporary Inventory -->
+    <div id="blitz-inventory">
+        <h4>Temporary Items</h4>
+        <div id="blitz-inventory-slots">
+            <!-- Temporary item slots will be generated here by JS -->
+        </div>
+        <div id="upgrade-buttons" style="margin-top: 10px; display: flex; gap: 5px; flex-wrap: wrap;">
+            <button id="upgrade-range" style="font-size: 12px; padding: 5px 8px;">Range (<span id="upgrade-range-cost">10</span>)</button>
+            <button id="upgrade-speed" style="font-size: 12px; padding: 5px 8px;">Speed (<span id="upgrade-speed-cost">10</span>)</button>
+            <button id="upgrade-damage" style="font-size: 12px; padding: 5px 8px;">Damage (<span id="upgrade-damage-cost">10</span>)</button>
+        </div>
+    </div>
+
+    <!-- Loot Decision Modal -->
+    <div id="loot-decision-modal" class="overlay" style="display: none;">
+        <div class="overlay-content loot-modal">
+            <h3>New Item Found!</h3>
+            <div id="loot-item-display">
+                <!-- Item info will be shown here -->
+            </div>
+            <div class="loot-actions">
+                <button id="take-loot-button" class="primary-button">Take Item</button>
+                <button id="discard-loot-button" class="secondary-button">Discard</button>
+            </div>
+            <div id="inventory-full-warning" style="display: none;">
+                <p>Inventory is full! Choose an item to replace:</p>
+                <div id="replacement-slots">
+                    <!-- Current items will be shown here for replacement -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlays -->
+    <div id="game-over-overlay" class="overlay">
+        <div class="overlay-content">
+            <h2>Game Over</h2>
+            <button id="restart-button">Restart Blitz</button>
+            <a href="/"><button>Main Menu</button></a>
+        </div>
+    </div>
+    <div id="pause-overlay" class="overlay">
+        <div id="pause-icon">❚❚</div>
+    </div>
+
+    <script type="module" src="/src/blitz-page.js"></script>
+</body>
+</html>
