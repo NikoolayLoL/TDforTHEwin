@@ -1,6 +1,6 @@
 // This file will handle the logic for the main menu (index.html)
 import Inventory from './inventory/Inventory.js';
-import './../style.css';
+import './../css/main.css';
 
 const inventory = new Inventory();
 
@@ -45,7 +45,7 @@ function setupGameStart() {
     startGameLink.addEventListener('click', (e) => {
         e.preventDefault();
         
-        let gameUrl = '/game.html';
+        let gameUrl = '/pages/game.html';
         const seedValue = seedInput.value.trim();
         
         if (seedValue && !isNaN(seedValue)) {
@@ -59,7 +59,7 @@ function setupGameStart() {
     startBlitzLink.addEventListener('click', (e) => {
         e.preventDefault();
         
-        let gameUrl = '/blitz.html';
+        let gameUrl = '/pages/blitz.html';
         const seedValue = seedInput.value.trim();
         
         if (seedValue && !isNaN(seedValue)) {

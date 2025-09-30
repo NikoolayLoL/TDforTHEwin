@@ -1,6 +1,6 @@
 import Inventory from './inventory/Inventory.js';
 import { effects } from './effects/effectDefinitions.js';
-import './../style.css';
+import './../css/main.css';
 
 const inventory = new Inventory();
 

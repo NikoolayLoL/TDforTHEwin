@@ -23,14 +23,6 @@ export default class BlitzInventory {
         if (!container) {
             container = document.createElement('div');
             container.id = 'blitz-notifications';
-            container.style.cssText = `
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                width: 300px;
-                z-index: 1000;
-                pointer-events: none;
-            `;
             document.body.appendChild(container);
         }
     }
@@ -166,62 +158,51 @@ export default class BlitzInventory {
         }
 
         const notification = document.createElement('div');
-        notification.style.cssText = `
-            background: rgba(0, 0, 0, 0.9);
-            border: 2px solid ${this.getRarityColor(item)};
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 10px;
-            color: white;
-            font-size: 14px;
-            animation: slideInFromRight 0.3s ease-out;
-            pointer-events: auto;
-            max-width: 280px;
-        `;
+        notification.style.borderColor = this.getRarityColor(item);
 
         let content = '';
-        let bgColor = 'rgba(0, 0, 0, 0.9)';
+        let cssClass = 'blitz-notification';
 
         switch (action) {
             case 'added':
+                cssClass += ' added';
                 content = `
-                    <div style="color: #4CAF50; font-weight: bold; margin-bottom: 4px;">✓ ITEM ADDED</div>
-                    <div style="color: ${this.getRarityColor(item)}; font-weight: bold;">${item.name}</div>
-                    <div style="color: #ccc; font-size: 12px;">${item.description}</div>
+                    <div class="notification-header added">✓ ITEM ADDED</div>
+                    <div class="notification-item-name" style="color: ${this.getRarityColor(item)};">${item.name}</div>
+                    <div class="notification-description">${item.description}</div>
                 `;
-                bgColor = 'rgba(76, 175, 80, 0.1)';
                 break;
             
             case 'upgraded':
+                cssClass += ' upgraded';
                 content = `
-                    <div style="color: #FF9800; font-weight: bold; margin-bottom: 4px;">⬆ ITEM UPGRADED</div>
-                    <div style="color: ${this.getRarityColor(item)}; font-weight: bold;">${item.name}</div>
-                    <div style="color: #ccc; font-size: 12px;">Replaced: ${replacedItem?.name || 'Unknown'}</div>
+                    <div class="notification-header upgraded">⬆ ITEM UPGRADED</div>
+                    <div class="notification-item-name" style="color: ${this.getRarityColor(item)};">${item.name}</div>
+                    <div class="notification-description">Replaced: ${replacedItem?.name || 'Unknown'}</div>
                 `;
-                bgColor = 'rgba(255, 152, 0, 0.1)';
                 break;
             
             case 'rejected_worse':
+                cssClass += ' rejected';
                 content = `
-                    <div style="color: #FFC107; font-weight: bold; margin-bottom: 4px;">⚠ ITEM REJECTED</div>
-                    <div style="color: ${this.getRarityColor(item)}; font-weight: bold;">${item.name}</div>
-                    <div style="color: #ccc; font-size: 12px;">You have a better version</div>
+                    <div class="notification-header rejected">⚠ ITEM REJECTED</div>
+                    <div class="notification-item-name" style="color: ${this.getRarityColor(item)};">${item.name}</div>
+                    <div class="notification-description">You have a better version</div>
                 `;
-                bgColor = 'rgba(255, 193, 7, 0.1)';
                 break;
             
             case 'rejected_full':
+                cssClass += ' inventory-full';
                 content = `
-                    <div style="color: #F44336; font-weight: bold; margin-bottom: 4px;">✕ INVENTORY FULL</div>
-                    <div style="color: ${this.getRarityColor(item)}; font-weight: bold;">${item.name}</div>
-                    <div style="color: #ccc; font-size: 12px;">No upgrade available</div>
+                    <div class="notification-header inventory-full">✕ INVENTORY FULL</div>
+                    <div class="notification-item-name" style="color: ${this.getRarityColor(item)};">${item.name}</div>
+                    <div class="notification-description">No upgrade available</div>
                 `;
-                bgColor = 'rgba(244, 67, 54, 0.1)';
                 break;
         }
 
+        notification.className = cssClass;
         notification.innerHTML = content;
-        notification.style.background = bgColor;
         container.appendChild(notification);
 
         // Auto-remove after 4 seconds
@@ -278,17 +259,12 @@ export default class BlitzInventory {
             if (item) {
                 // Create main content area
                 const contentDiv = document.createElement('div');
+                contentDiv.className = 'blitz-inventory-content';
                 contentDiv.textContent = item.name.substring(0, 3);
                 contentDiv.style.cssText = `
-                    width: 100%;
-                    height: 100%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
                     background-color: ${this.getRarityColor(item)};
                     color: #000;
                     border: 2px solid ${this.getRarityColor(item)};
-                    border-radius: 4px;
                 `;
                 
                 // Create tooltip
@@ -299,34 +275,9 @@ export default class BlitzInventory {
                 
                 // Create permanent remove button (X)
                 const removeBtn = document.createElement('button');
+                removeBtn.className = 'blitz-remove-button';
                 removeBtn.innerHTML = '×';
                 removeBtn.title = 'Remove item';
-                removeBtn.style.cssText = `
-                    position: absolute !important;
-                    top: -6px !important;
-                    right: -6px !important;
-                    width: 20px !important;
-                    height: 20px !important;
-                    background: #ff4444 !important;
-                    color: white !important;
-                    border: 2px solid #fff !important;
-                    border-radius: 50% !important;
-                    font-size: 14px !important;
-                    font-weight: bold !important;
-                    cursor: pointer !important;
-                    z-index: 9999 !important;
-                    display: flex !important;
-                    align-items: center !important;
-                    justify-content: center !important;
-                    line-height: 1 !important;
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.5) !important;
-                    pointer-events: auto !important;
-                    transition: none !important;
-                    opacity: 1 !important;
-                    visibility: visible !important;
-                    padding: 0 !important;
-                    min-height: auto !important;
-                `;
                 
                 // Show tooltip on content hover
                 contentDiv.addEventListener('mouseenter', () => {
@@ -366,14 +317,7 @@ export default class BlitzInventory {
                 slotEl.appendChild(contentDiv);
                 slotEl.appendChild(removeBtn);
             } else {
-                slotEl.style.cssText = `
-                    background-color: transparent;
-                    border: 2px dashed #555;
-                    color: #555;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                `;
+                slotEl.className += ' empty';
                 slotEl.textContent = '+';
             }
             

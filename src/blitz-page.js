@@ -1,6 +1,7 @@
 // This file will handle the logic for the blitz game page (blitz.html)
 import BlitzGame from './game/BlitzGame.js';
-import './../style.css';
+import './../css/main.css';
+import './../css/blitz.css';
 import { config } from './config.js';
 
 const canvas = document.getElementById('gameCanvas');

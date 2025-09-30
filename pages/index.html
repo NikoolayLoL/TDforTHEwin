@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tower Defense</title>
+    <link rel="stylesheet" href="../css/main.css">
+</head>
+<body>
+    <div id="start-screen-overlay" class="overlay" style="display: flex;">
+        <div class="overlay-content">
+            <h2>Tower Defense</h2>
+            
+            <h3>Active Items</h3>
+            <div id="active-items-display" class="item-grid">
+                <!-- Active items will be shown here -->
+            </div>
+
+            <div class="seed-section">
+                <h3>Game Seed (Optional)</h3>
+                <input type="number" id="seed-input" placeholder="Enter seed or leave empty for random" min="0" max="999999">
+                <p class="seed-info">Use the same seed to replay with identical backgrounds and enemy patterns</p>
+            </div>
+
+            <div class="game-mode-buttons">
+                <a href="game.html" id="start-game-link"><button id="start-game-button" class="primary-button">Classic Mode</button></a>
+                <a href="blitz.html" id="start-blitz-link"><button id="start-blitz-button" class="secondary-button">Blitz Mode</button></a>
+                <p class="mode-info">Blitz: Fast-paced with instant loot decisions and temporary inventory</p>
+            </div>
+            
+            <a href="inventory.html"><button id="inventory-button">Manage Inventory</button></a>
+        </div>
+    </div>
+    <script type="module" src="../src/start-page.js"></script>
+</body>
+</html>

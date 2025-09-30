@@ -1,7 +1,7 @@
 // This file will handle the logic for the game page (game.html)
 import Game from './game/Game.js';
 import Inventory from './inventory/Inventory.js';
-import './../style.css';
+import './../css/main.css';
 import { config } from './config.js';
 
 const canvas = document.getElementById('gameCanvas');
