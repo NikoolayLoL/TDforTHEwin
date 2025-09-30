@@ -8,8 +8,8 @@ export default class BossEnemy extends Enemy {
     static healthScalingFactor = 0.3;
     static speedScalingFactor = 0.5;
 
-    constructor(x, y, healthMultiplier, speedModifier) {
-        super(x, y, BossEnemy.health, BossEnemy.speed, BossEnemy.goldValue, BossEnemy.color, healthMultiplier, BossEnemy.healthScalingFactor, speedModifier, BossEnemy.speedScalingFactor);
+    constructor(x, y, healthMultiplier, speedModifier, isBoss = true, isElite = false) {
+        super(x, y, BossEnemy.health, BossEnemy.speed, BossEnemy.goldValue, BossEnemy.color, healthMultiplier, BossEnemy.healthScalingFactor, speedModifier, BossEnemy.speedScalingFactor, isBoss, isElite);
         this.radius = 30;
     }
 

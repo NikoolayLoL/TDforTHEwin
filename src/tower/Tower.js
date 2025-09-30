@@ -1,81 +1,110 @@
 import Projectile from './Projectile.js';
+import * as config from '../config.js';
 
 export default class Tower {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.radius = 20;
-        this.range = 185;
-        this.attackSpeed = 1; // attacks per second
-        this.damage = 22;
-        this.health = 100;
-        this.regen = 1; // health per second
+        this.radius = config.config.towerRadius;
+        
+        // Base stats
+        this.baseRange = config.config.towerBaseRange;
+        this.baseAttackSpeed = config.config.towerBaseAttackSpeed;
+        this.baseDamage = config.config.towerBaseDamage;
+
+        // Current upgrade costs (dynamic)
+        this.rangeCost = config.config.towerRangeUpgradeCost;
+        this.speedCost = config.config.towerSpeedUpgradeCost;
+        this.damageCost = config.config.towerDamageUpgradeCost;
+
+        // Buffs will be stored here
+        this.buffs = null;
+
         this.attackCooldown = 0;
-        this.target = null;
-
-        this.rangeCost = 10;
-        this.speedCost = 10;
-        this.damageCost = 10;
+        this.currentTarget = null;
     }
 
-    resetUpgrades() {
-        this.rangeCost = 10;
-        this.speedCost = 10;
-        this.damageCost = 10;
+    // Getters for dynamic stat calculation
+    get range() {
+        const percentageBonus = this.buffs?.range?.percentage || 0;
+        const flatBonus = this.buffs?.range?.flat || 0;
+        return this.baseRange * (1 + percentageBonus) + flatBonus;
     }
 
-    update(enemies, dt = 0) {
-        if (this.attackCooldown > 0) {
-            this.attackCooldown -= dt;
+    get attackSpeed() {
+        const percentageBonus = this.buffs?.attackSpeed?.percentage || 0;
+        const flatBonus = this.buffs?.attackSpeed?.flat || 0;
+        return this.baseAttackSpeed * (1 + percentageBonus) + flatBonus;
+    }
+
+    get damage() {
+        const percentageBonus = this.buffs?.damage?.percentage || 0;
+        const flatBonus = this.buffs?.damage?.flat || 0;
+        return this.baseDamage * (1 + percentageBonus) + flatBonus;
+    }
+
+    update(enemies, dt, buffs) {
+        this.buffs = buffs; // Update buffs from game state
+        this.attackCooldown -= dt;
+
+        // If current target is dead, out of range, or no longer in enemies array, find a new one
+        if (this.currentTarget && (
+            this.currentTarget.health <= 0 || 
+            this.getDistanceTo(this.currentTarget) > this.range ||
+            !enemies.includes(this.currentTarget)
+        )) {
+            this.currentTarget = null;
         }
 
-        this.findTarget(enemies);
+        if (!this.currentTarget) {
+            this.currentTarget = this.findNearestEnemy(enemies);
+        }
 
-        if (this.target && this.attackCooldown <= 0) {
+        // If there's a valid target and cooldown is ready, fire
+        if (this.currentTarget && this.attackCooldown <= 0) {
             this.attackCooldown = 1 / this.attackSpeed;
-            return this.shoot();
+            return new Projectile(this.x, this.y, this.currentTarget, this.damage);
         }
         return null;
     }
 
+    findNearestEnemy(enemies) {
+        let nearestEnemy = null;
+        let minDistance = Infinity;
+
+        enemies.forEach(enemy => {
+            const distance = this.getDistanceTo(enemy);
+            if (distance < this.range && distance < minDistance) {
+                minDistance = distance;
+                nearestEnemy = enemy;
+            }
+        });
+        return nearestEnemy;
+    }
+
+    getDistanceTo(enemy) {
+        return Math.hypot(this.x - enemy.x, this.y - enemy.y) - enemy.radius;
+    }
+
     draw(ctx) {
-        ctx.fillStyle = 'blue';
+        // Draw tower
+        ctx.fillStyle = 'cyan';
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
 
         // Draw range
-        ctx.strokeStyle = 'rgba(0, 0, 255, 0.2)';
+        ctx.strokeStyle = 'rgba(0, 255, 255, 0.3)';
+        ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.range, 0, Math.PI * 2);
         ctx.stroke();
     }
 
-    findTarget(enemies) {
-        this.target = null;
-        let closestDist = this.range;
-
-        enemies.forEach(enemy => {
-            const dist = Math.hypot(this.x - enemy.x, this.y - enemy.y);
-            if (dist < closestDist) {
-                closestDist = dist;
-                this.target = enemy;
-            }
-        });
-    }
-
-    shoot() {
-        if (this.target) {
-            const angle = Math.atan2(this.target.y - this.y, this.target.x - this.x);
-            return new Projectile(this.x, this.y, angle);
-        }
-        return null;
-    }
-
     upgradeRange(gold) {
         const cost = this.rangeCost;
         if (gold >= cost) {
-            this.range += 15;
+            this.baseRange += config.config.towerRangeUpgradeAmount;
             this.rangeCost = Math.floor(cost * 1.5);
             return gold - cost;
         }
@@ -85,7 +114,7 @@ export default class Tower {
     upgradeSpeed(gold) {
         const cost = this.speedCost;
         if (gold >= cost) {
-            this.attackSpeed += 0.1;
+            this.baseAttackSpeed += config.config.towerSpeedUpgradeAmount;
             this.speedCost = Math.floor(cost * 1.5);
             return gold - cost;
         }
@@ -95,7 +124,7 @@ export default class Tower {
     upgradeDamage(gold) {
         const cost = this.damageCost;
         if (gold >= cost) {
-            this.damage += 6;
+            this.baseDamage += config.config.towerDamageUpgradeAmount;
             this.damageCost = Math.floor(cost * 1.5);
             return gold - cost;
         }

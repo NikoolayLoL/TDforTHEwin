@@ -9,10 +9,10 @@ export default class Enemy {
      * @param {number} speed
      * @param {number} goldValue
      */
-    constructor(x, y, health, speed, goldValue, color, healthMultiplier = 1, healthScalingFactor = 1, speedModifier = 1, speedScalingFactor = 1) {
+    constructor(x, y, health, speed, goldValue, color, healthMultiplier = 1, healthScalingFactor = 1, speedModifier = 1, speedScalingFactor = 1, isBoss = false, isElite = false) {
         this.x = x;
         this.y = y;
-        this.radius = 10;
+        this.radius = isBoss ? 20 : (isElite ? 15 : 10);
         const finalHealthMultiplier = 1 + (healthMultiplier - 1) * healthScalingFactor;
         const scaledHealth = health * finalHealthMultiplier;
         this.health = scaledHealth;
@@ -22,6 +22,9 @@ export default class Enemy {
 
         this.goldValue = goldValue;
         this.color = color;
+        this.isBoss = isBoss;
+        this.isElite = isElite;
+        this.hasDroppedLoot = false; // Prevent multiple drops from same enemy
     }
 
     /**
@@ -39,14 +42,31 @@ export default class Enemy {
      * @param {CanvasRenderingContext2D} ctx
      */
     draw(ctx) {
-        ctx.fillStyle = this.color;
+        // Special visual effects for boss and elite enemies
+        if (this.isBoss) {
+            // Boss glow effect
+            ctx.shadowColor = '#ff0000';
+            ctx.shadowBlur = 20;
+            ctx.fillStyle = '#ff3333';
+        } else if (this.isElite) {
+            // Elite glow effect
+            ctx.shadowColor = '#ffaa00';
+            ctx.shadowBlur = 10;
+            ctx.fillStyle = '#ffcc44';
+        } else {
+            ctx.fillStyle = this.color;
+        }
+        
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
+        
+        // Reset shadow
+        ctx.shadowBlur = 0;
 
         // Health bar
         const healthBarWidth = this.radius * 2;
-        const healthBarHeight = 5;
+        const healthBarHeight = this.isBoss ? 8 : (this.isElite ? 6 : 5);
         const healthBarX = this.x - this.radius;
         const healthBarY = this.y - this.radius - healthBarHeight - 2;
 
@@ -54,7 +74,11 @@ export default class Enemy {
         ctx.fillRect(healthBarX, healthBarY, healthBarWidth, healthBarHeight);
 
         const currentHealthWidth = healthBarWidth * (this.health / this.maxHealth);
-        ctx.fillStyle = 'green';
+        let healthColor = 'green';
+        if (this.isBoss) healthColor = '#ff3333';
+        else if (this.isElite) healthColor = '#ffaa00';
+        
+        ctx.fillStyle = healthColor;
         ctx.fillRect(healthBarX, healthBarY, currentHealthWidth, healthBarHeight);
     }
 

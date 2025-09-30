@@ -19,6 +19,15 @@ function displayActiveItems() {
             tooltip.classList.add('tooltip');
             tooltip.textContent = `${item.name}: ${item.description}`;
             itemEl.appendChild(tooltip);
+
+            itemEl.addEventListener('mouseenter', () => {
+                tooltip.classList.add('visible');
+            });
+
+            itemEl.addEventListener('mouseleave', () => {
+                tooltip.classList.remove('visible');
+            });
+
         } else {
             itemEl.classList.add('empty-slot');
         }

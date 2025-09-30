@@ -1,22 +1,20 @@
 export default class Projectile {
-    constructor(x, y, angle) {
+    constructor(x, y, target, damage) {
         this.x = x;
         this.y = y;
+        this.target = target;
+        this.damage = damage;
         this.radius = 5;
-        this.speed = 300; // px/sec
-        this.active = true;
-        this.vx = Math.cos(angle);
-        this.vy = Math.sin(angle);
+        this.speed = 500; // pixels per second
+
+        const angle = Math.atan2(target.y - y, target.x - x);
+        this.vx = Math.cos(angle) * this.speed;
+        this.vy = Math.sin(angle) * this.speed;
     }
 
     update(dt) {
-        this.x += this.vx * this.speed * dt;
-        this.y += this.vy * this.speed * dt;
-
-        // Deactivate projectile if it goes off-screen
-        if (this.isOffScreen()) {
-            this.active = false;
-        }
+        this.x += this.vx * dt;
+        this.y += this.vy * dt;
     }
 
     draw(ctx) {
@@ -24,9 +22,5 @@ export default class Projectile {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
-    }
-
-    isOffScreen(width, height) {
-        return this.x < 0 || this.x > width || this.y < 0 || this.y > height;
     }
 }

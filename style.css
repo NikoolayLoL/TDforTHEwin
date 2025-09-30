@@ -73,10 +73,18 @@ body {
     left: 50%;
     transform: translateX(-50%);
     display: flex;
+    flex-direction: column; /* Arrange children (slots and buttons) vertically */
     gap: 10px;
     background: rgba(0, 0, 0, 0.5);
     padding: 10px;
     border-radius: 5px;
+    align-items: center; /* Center items horizontally */
+}
+
+#inventory-slots, #upgrade-buttons {
+    display: flex;
+    flex-direction: row; /* Arrange items inside horizontally */
+    gap: 10px;
 }
 
 #game-over {
@@ -124,6 +132,59 @@ body {
     position: relative;
     text-align: center;
     color: white;
+}
+
+.inventory-slot {
+    width: 60px;
+    height: 60px;
+    border: 2px solid #555;
+    background-color: #444;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    position: relative; /* This is the key fix */
+    user-select: none;
+}
+
+.inventory-slot:hover {
+    background-color: #555;
+}
+
+.inventory-slot .tooltip {
+    visibility: hidden;
+    width: 120px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.inventory-slot .tooltip.visible {
+    visibility: visible;
+    opacity: 1;
+}
+
+.inventory-slot .tooltip.visible::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
 }
 
 .inventory-slot.empty-slot {

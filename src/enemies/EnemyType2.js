@@ -8,8 +8,8 @@ export default class EnemyType2 extends Enemy {
     static healthScalingFactor = 0.5;
     static speedScalingFactor = 1.2;
 
-    constructor(x, y, healthMultiplier, speedModifier) {
-        super(x, y, EnemyType2.health, EnemyType2.speed, EnemyType2.goldValue, EnemyType2.color, healthMultiplier, EnemyType2.healthScalingFactor, speedModifier, EnemyType2.speedScalingFactor);
-        this.radius = 15;
+    constructor(x, y, healthMultiplier, speedModifier, isBoss = false, isElite = false) {
+        super(x, y, EnemyType2.health, EnemyType2.speed, EnemyType2.goldValue, EnemyType2.color, healthMultiplier, EnemyType2.healthScalingFactor, speedModifier, EnemyType2.speedScalingFactor, isBoss, isElite);
+        this.radius = isElite ? 20 : (isBoss ? 25 : 15);
     }
 }

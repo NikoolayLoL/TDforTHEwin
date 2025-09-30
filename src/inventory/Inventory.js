@@ -16,14 +16,16 @@ export default class Inventory {
 
     load() {
         const savedInventory = this.storage.loadInventory();
-        if (savedInventory) {
-            this.items = savedInventory.items.map(itemData => itemData ? new Item(itemData.name, itemData.description) : null);
-            this.activeItems = savedInventory.activeItems.map(itemData => itemData ? new Item(itemData.name, itemData.description) : null);
+        if (savedInventory && savedInventory.items && savedInventory.activeItems) {
+            this.items = savedInventory.items.map(itemData => itemData ? new Item(itemData.name, itemData.description, itemData.effectId) : null);
+            this.activeItems = savedInventory.activeItems.map(itemData => itemData ? new Item(itemData.name, itemData.description, itemData.effectId) : null);
         } else {
-            // For testing, let's add some dummy items
-            this.items[0] = new Item('Power Crystal', 'Increases tower damage by 10%');
-            this.items[1] = new Item('Range Finder', 'Increases tower range by 10%');
-            this.items[2] = new Item('Rapid Reloader', 'Increases tower attack speed by 10%');
+            // For testing, let's add some dummy items with effects
+            this.items[0] = new Item('Power Crystal', 'Increases tower damage by 10%', 'DMG_10_PERCENT');
+            this.items[1] = new Item('Range Finder', 'Increases tower range by 10%', 'RANGE_10_PERCENT');
+            this.items[2] = new Item('Rapid Reloader', 'Increases tower attack speed by 10%', 'SPEED_10_PERCENT');
+            this.items[3] = new Item('Iron Blade', 'Increases tower damage by 5', 'DMG_5_FLAT');
+            this.items[4] = new Item('Scope', 'Increases tower range by 20', 'RANGE_20_FLAT');
             this.save();
         }
     }

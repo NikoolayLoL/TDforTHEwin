@@ -41,12 +41,28 @@ function updateActiveInventoryUI() {
     inventory.activeItems.forEach(item => {
         const slotEl = document.createElement('div');
         slotEl.classList.add('inventory-slot');
+        let tooltipTimer;
+
         if (item) {
             slotEl.textContent = item.name.substring(0, 3);
             const tooltip = document.createElement('span');
             tooltip.classList.add('tooltip');
             tooltip.textContent = `${item.name}: ${item.description}`;
             slotEl.appendChild(tooltip);
+
+            slotEl.addEventListener('mouseenter', () => {
+                tooltipTimer = setTimeout(() => {
+                    tooltip.classList.add('visible');
+                }, 370);
+            });
+
+            slotEl.addEventListener('mouseleave', () => {
+                clearTimeout(tooltipTimer);
+                tooltip.classList.remove('visible');
+            });
+
+        } else {
+            slotEl.classList.add('empty-slot');
         }
         inventorySlots.appendChild(slotEl);
     });

@@ -2,6 +2,9 @@ import Tower from '../tower/Tower.js';
 import WaveManager from '../waves/WaveManager.js';
 import UI from '../ui/UI.js';
 import GameOver from './GameOver.js';
+import BuffSystem from '../effects/BuffSystem.js';
+import Inventory from '../inventory/Inventory.js';
+import LootSystem from '../loot/LootSystem.js';
 import * as config from '../config.js';
 
 export default class Game {
@@ -9,6 +12,10 @@ export default class Game {
         this.width = width;
         this.height = height;
         this.speedMultiplier = 1;
+        
+        this.inventory = new Inventory();
+        this.buffSystem = new BuffSystem(this.inventory.activeItems);
+        
         this.tower = new Tower(this.width / 2, this.height / 2);
         this.waveManager = new WaveManager(this);
         this.ui = new UI(this);
@@ -27,8 +34,9 @@ export default class Game {
         if (this.isGameOver) return;
 
         const effectiveDt = dt * this.speedMultiplier;
+        const aggregatedBuffs = this.buffSystem.getAggregatedBuffs();
 
-        const newProjectile = this.tower.update(this.waveManager.enemies, effectiveDt);
+        const newProjectile = this.tower.update(this.waveManager.enemies, effectiveDt, aggregatedBuffs);
         if (newProjectile) {
             this.projectiles.push(newProjectile);
         }
@@ -62,10 +70,11 @@ export default class Game {
             this.projectiles.forEach((projectile, pIndex) => {
                 const dist = Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y);
                 if (dist - enemy.radius - projectile.radius < 1) {
-                    enemy.takeDamage(this.tower.damage);
+                    enemy.takeDamage(projectile.damage); // Use projectile's damage
                     this.projectiles.splice(pIndex, 1);
-                    if (enemy.health <= 0) {
+                    if (enemy.health <= 0 && !enemy.hasDroppedLoot) {
                         this.gold += enemy.goldValue;
+                        this.handleEnemyDeath(enemy);
                         this.waveManager.enemies.splice(eIndex, 1);
                     }
                 }
@@ -79,8 +88,36 @@ export default class Game {
         });
     }
 
+    handleEnemyDeath(enemy) {
+        enemy.hasDroppedLoot = true;
+        
+        let shouldDrop = false;
+        if (enemy.isBoss) {
+            shouldDrop = Math.random() < LootSystem.getBossDropChance();
+        } else if (enemy.isElite) {
+            shouldDrop = Math.random() < LootSystem.getEliteDropChance();
+        }
+
+        if (shouldDrop) {
+            const newItem = LootSystem.generateRandomItem();
+            const added = this.inventory.addItem(newItem);
+            
+            if (added) {
+                // Update buff system with new inventory
+                this.buffSystem = new BuffSystem(this.inventory.activeItems);
+                
+                // Show notification (you could add a visual effect here later)
+                console.log(`New item found: ${newItem.name} - ${newItem.description}`);
+            } else {
+                console.log('Inventory full! Item lost.');
+            }
+        }
+    }
+
     restart() {
         this.speedMultiplier = 1;
+        this.inventory = new Inventory(); // Re-load inventory
+        this.buffSystem = new BuffSystem(this.inventory.activeItems); // Re-create buff system
         this.tower = new Tower(this.width / 2, this.height / 2);
         this.waveManager = new WaveManager(this);
         this.projectiles = [];
