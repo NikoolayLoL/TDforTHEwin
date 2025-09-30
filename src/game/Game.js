@@ -12,7 +12,7 @@ export default class Game {
         this.tower = new Tower(this.width / 2, this.height / 2);
         this.waveManager = new WaveManager(this);
         this.ui = new UI(this);
-        this.gameOverScreen = new GameOver(this);
+        this.gameOverScreen = new GameOver();
         this.projectiles = [];
         this.lives = config.config.startingLives;
         this.gold = config.config.startingGold;
@@ -83,8 +83,6 @@ export default class Game {
         this.speedMultiplier = 1;
         this.tower = new Tower(this.width / 2, this.height / 2);
         this.waveManager = new WaveManager(this);
-        this.ui = new UI(this);
-        this.gameOverScreen = new GameOver(this);
         this.projectiles = [];
         this.lives = config.config.startingLives;
         this.gold = config.config.startingGold;

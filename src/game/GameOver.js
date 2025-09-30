@@ -1,14 +1,17 @@
 export default class GameOver {
-    constructor(game) {
-        this.game = game;
-        this.element = document.getElementById('game-over');
+    constructor() {
+        this.element = document.getElementById('game-over-overlay');
     }
 
     show() {
-        this.element.style.display = 'block';
+        if (this.element) {
+            this.element.style.display = 'flex';
+        }
     }
 
     hide() {
-        this.element.style.display = 'none';
+        if (this.element) {
+            this.element.style.display = 'none';
+        }
     }
 }

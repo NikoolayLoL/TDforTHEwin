@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tower Defense - Inventory</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="overlay" style="display: flex;">
+        <div class="overlay-content inventory-container">
+            <h2>Inventory</h2>
+            
+            <div class="inventory-section">
+                <h3>Active Items (Drag to reorder or unequip)</h3>
+                <div id="active-items-grid" class="item-grid">
+                    <!-- Active items will be generated here -->
+                </div>
+            </div>
+
+            <div class="inventory-section">
+                <h3>Your Items (Drag to an active slot to equip)</h3>
+                <div id="main-inventory-grid" class="item-grid">
+                    <!-- Main inventory items will be generated here -->
+                </div>
+            </div>
+
+            <div id="delete-zone">
+                <p>Drag item here to delete</p>
+            </div>
+
+            <a href="/"><button>Back to Main Menu</button></a>
+        </div>
+    </div>
+    <script type="module" src="/src/inventory-page.js"></script>
+</body>
+</html>
