@@ -28,14 +28,17 @@ function gameLoop(timestamp) {
     requestAnimationFrame(gameLoop);
 }
 
-// Pass game reference to tower and ui
-game.tower.game = game;
-game.ui.game = game;
 game.ui.draw();
 
-document.getElementById('upgrade-range').addEventListener('click', () => game.tower.upgradeRange());
-document.getElementById('upgrade-speed').addEventListener('click', () => game.tower.upgradeSpeed());
-document.getElementById('upgrade-damage').addEventListener('click', () => game.tower.upgradeDamage());
+document.getElementById('upgrade-range').addEventListener('click', () => {
+    game.gold = game.tower.upgradeRange(game.gold);
+});
+document.getElementById('upgrade-speed').addEventListener('click', () => {
+    game.gold = game.tower.upgradeSpeed(game.gold);
+});
+document.getElementById('upgrade-damage').addEventListener('click', () => {
+    game.gold = game.tower.upgradeDamage(game.gold);
+});
 
 const speedButton = document.getElementById('speed-control-button');
 const speedLevels = [1, 1.5, 2];

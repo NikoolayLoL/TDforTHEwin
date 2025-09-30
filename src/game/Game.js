@@ -28,7 +28,10 @@ export default class Game {
 
         const effectiveDt = dt * this.speedMultiplier;
 
-        this.tower.update(this.waveManager.enemies, effectiveDt);
+        const newProjectile = this.tower.update(this.waveManager.enemies, effectiveDt);
+        if (newProjectile) {
+            this.projectiles.push(newProjectile);
+        }
         this.waveManager.update(effectiveDt);
 
         this.waveManager.enemies.forEach(enemy => {
@@ -87,8 +90,6 @@ export default class Game {
         this.gold = config.config.startingGold;
         this.isGameOver = false;
         
-        this.tower.game = this;
-        this.ui.game = this;
         this.ui.draw();
         this.gameOverScreen.hide();
     }

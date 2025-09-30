@@ -5,9 +5,9 @@ export default class Tower {
         this.x = x;
         this.y = y;
         this.radius = 20;
-        this.range = 150;
+        this.range = 185;
         this.attackSpeed = 1; // attacks per second
-        this.damage = 20;
+        this.damage = 22;
         this.health = 100;
         this.regen = 1; // health per second
         this.attackCooldown = 0;
@@ -32,9 +32,10 @@ export default class Tower {
         this.findTarget(enemies);
 
         if (this.target && this.attackCooldown <= 0) {
-            this.shoot();
             this.attackCooldown = 1 / this.attackSpeed;
+            return this.shoot();
         }
+        return null;
     }
 
     draw(ctx) {
@@ -66,32 +67,38 @@ export default class Tower {
     shoot() {
         if (this.target) {
             const angle = Math.atan2(this.target.y - this.y, this.target.x - this.x);
-            const projectile = new Projectile(this.x, this.y, angle);
-            this.game.projectiles.push(projectile);
+            return new Projectile(this.x, this.y, angle);
         }
+        return null;
     }
 
-    upgradeRange() {
-        if (this.game.gold >= this.rangeCost) {
-            this.game.gold -= this.rangeCost;
+    upgradeRange(gold) {
+        const cost = this.rangeCost;
+        if (gold >= cost) {
             this.range += 15;
-            this.rangeCost = Math.floor(this.rangeCost * 1.5);
+            this.rangeCost = Math.floor(cost * 1.5);
+            return gold - cost;
         }
+        return gold;
     }
 
-    upgradeSpeed() {
-        if (this.game.gold >= this.speedCost) {
-            this.game.gold -= this.speedCost;
+    upgradeSpeed(gold) {
+        const cost = this.speedCost;
+        if (gold >= cost) {
             this.attackSpeed += 0.1;
-            this.speedCost = Math.floor(this.speedCost * 1.5);
+            this.speedCost = Math.floor(cost * 1.5);
+            return gold - cost;
         }
+        return gold;
     }
 
-    upgradeDamage() {
-        if (this.game.gold >= this.damageCost) {
-            this.game.gold -= this.damageCost;
+    upgradeDamage(gold) {
+        const cost = this.damageCost;
+        if (gold >= cost) {
             this.damage += 6;
-            this.damageCost = Math.floor(this.damageCost * 1.5);
+            this.damageCost = Math.floor(cost * 1.5);
+            return gold - cost;
         }
+        return gold;
     }
 }
