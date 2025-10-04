@@ -6,15 +6,15 @@ import Item from '../inventory/Item.js';
 export default class BlitzLootSystem extends LootSystem {
     // Higher drop chances for blitz mode (reduced by half)
     static getBossDropChance() {
-        return 0.475; // 47.5% (was 95%)
+        return 0.3; // 47.5% (was 95%)
     }
 
     static getEliteDropChance() {
-        return 0.30; // 30% (was 60%)
+        return 0.20; // 30% (was 60%)
     }
 
     static getNormalEnemyDropChance() {
-        return 0.125; // 12.5% (was 25%)
+        return 0.10; // 12.5% (was 25%)
     }
 
     // Adjusted rarity weights for blitz mode (more lower-tier items from normal enemies)
